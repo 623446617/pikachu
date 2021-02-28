@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>Title</title>
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.5s;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background-color: #FFE600;
+        }
+
+        .wrapper {
+            width: 800px;
+            height: 250px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .action {
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid red;
+        }
+
+        .action > button.active {
+            background-color: green;
+        }
+    </style>
+    <link rel="stylesheet" href="./lib/prism/prism.css">
+    <style id="styleTag">
+
+    </style>
+</head>
+<body>
+
+<pre id="code" style="height: 50%; overflow: auto;"></pre>
+
+<div style="height: 50%; position: relative;">
+    <div class="wrapper">
+        <div class="nose"></div>
+        <div class="eye eye-left"></div>
+        <div class="eye eye-right"></div>
+        <div class="face face-left"></div>
+        <div class="face face-right"></div>
+        <div class="upperLip upperLip-left"></div>
+        <div class="upperLip upperLip-right"></div>
+        <div class="lowerLip-wrapper">
+            <div class="lowerLip"></div>
+        </div>
+    </div>
+</div>
+<div class="action">
+    <button data-speed="slow">慢</button>
+    <button class="active" data-speed="normal">中</button>
+    <button data-speed="fast">快</button>
+</div>
+</body>
+<script src="./lib/jquery.min.js"></script>
+<script src="./lib/prism/prism.js"></script>
+<script>
+    const T = 50;
+    let duration = T;
+
+    function writeCode(prefix, code, callback) {
+        let dom = document.getElementById('code');
+        let style = document.getElementById('styleTag');
+        let count = 0;
+        let timer = window.setTimeout(function fn() {
+            count += 1;
+            dom.innerHTML = Prism.highlight(prefix + code.substring(0, count), Prism.languages.css);
+            style.innerHTML = prefix + code.substring(0, count);
+            // 滚动条自动滚动
+            dom.scrollTop = dom.scrollHeight;
+            if (count < code.length) {
+                setTimeout(fn, duration);
+            } else {
+                callback();
+            }
+        }, duration);
+    }
+
+    let code = `
+        .nose {
+            position: absolute;
+            width: 0;
+            height: 0;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 20px solid;
+            border-radius: 50%;
+            border-color: black transparent transparent transparent;
+        }
+
+        .eye {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid black;
+            background-color: #2E2E2E;
+        }
+
+        .eye::before {
+            content: '';
+            display: block;
+            width: 50%;
+            height: 50%;
+            background-color: #ffffff;
+            border: 2px solid black;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 7px;
+        }
+
+        .eye-left {
+            left: 35%;
+            transform: translateX(-50%);
+        }
+
+        .eye-right {
+            right: 35%;
+            transform: translateX(50%);
+        }
+
+        .face {
+            position: absolute;
+            top: 100px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid black;
+            background-color: #FF0000;
+        }
+
+        .face-left {
+            left: 25%;
+            transform: translateX(-50%);
+        }
+
+        .face-right {
+            right: 25%;
+            transform: translateX(50%);
+        }
+
+        .upperLip {
+            position: absolute;
+            top: 60px;
+            width: 100px;
+            height: 30px;
+            border: 2px solid black;
+            border-top: none;
+            background-color: #FFE600;
+        }
+
+        .upperLip-left {
+            left: 50%;
+            transform: translateX(-100%) rotate(-25deg);
+            border-right: none;
+            border-bottom-left-radius: 100%;
+        }
+
+        .upperLip-right {
+            right: 50%;
+            transform: translateX(100%) rotate(25deg);
+            border-left: none;
+            border-bottom-right-radius: 100%;
+        }
+
+        .lowerLip-wrapper {
+            position: absolute;
+            left: 50%;
+            top: 65px;
+            transform: translateX(-50%);
+            width: 160px;
+            height: 180px;
+            overflow: hidden;
+            z-index: -1;
+            border-radius: 30px;
+        }
+
+        .lowerLip {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 800px;
+            border-radius: 100px / 400px;
+            background-color: #9B000A;
+            border: 2px solid black;
+            overflow: hidden;
+        }
+
+        .lowerLip::before {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            transform: translateX(-50%);
+            background-color: #FF485F;
+        }
+    `;
+
+    writeCode('', code, () => {
+        console.log(123);
+    });
+
+    $('.action').on('click', 'button', function (e) {
+        let $btn = $(e.currentTarget);
+        $btn.addClass('active').siblings().removeClass('active');
+        let speed = $btn.attr('data-speed');
+        console.log(speed);
+        switch (speed) {
+            case 'slow':
+                duration = 100;
+                break;
+            case 'normal':
+                duration = T;
+                break;
+            case 'fast':
+                duration = 10;
+                break;
+        }
+    });
+</script>
